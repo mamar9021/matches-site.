@@ -1,0 +1,32 @@
+name: تحديث مباريات اليوم
+
+on:
+  schedule:
+    - cron: '0 8 * * *'  # كل يوم الساعة 8 صباحًا بتوقيت UTC
+  workflow_dispatch:     # لتشغيله يدويًا أيضًا
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - name: 🧾 سحب الملفات
+      uses: actions/checkout@v3
+
+    - name: 📦 تثبيت Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.10'
+
+    - name: 🔧 تثبيت المكتبات المطلوبة
+      run: pip install requests beautifulsoup4
+
+    - name: 🏃 تشغيل السكريبت
+      run: python scraper.py
+
+    - name: 📤 رفع التغييرات
+      run: |
+        git config --global user.name "GitHub Action"
+        git config --global user.email "action@github.com"
+        git add matches.html
+        git commit -m "تحديث تلقائي لمباريات اليوم"
+        git push
